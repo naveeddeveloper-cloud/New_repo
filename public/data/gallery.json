@@ -1,0 +1,22 @@
+[
+  { "id": 1, "imageUrl": "https://picsum.photos/id/1018/1200/800", "caption": "Winning team at TechFest", "year": "2024", "category": "Technical" },
+  { "id": 2, "imageUrl": "https://picsum.photos/id/1015/1200/800", "caption": "Dance performance on Annual Day", "year": "2024", "category": "Cultural" },
+  { "id": 3, "imageUrl": "https://picsum.photos/id/1025/1200/800", "caption": "Inter-college Football Match", "year": "2024", "category": "Sports" },
+  { "id": 4, "imageUrl": "https://picsum.photos/id/103/1200/800", "caption": "Campus greenery in spring", "year": "2023", "category": "Campus Life" },
+  { "id": 5, "imageUrl": "https://picsum.photos/id/1039/1200/800", "caption": "Hackathon late night coding", "year": "2024", "category": "Technical" },
+  { "id": 6, "imageUrl": "https://picsum.photos/id/1043/1200/800", "caption": "Road trip during semester break", "year": "2023", "category": "Campus Life" },
+  { "id": 7, "imageUrl": "https://picsum.photos/id/1050/1200/800", "caption": "Annual Music Fest", "year": "2023", "category": "Cultural" },
+  { "id": 8, "imageUrl": "https://picsum.photos/id/106/1200/800", "caption": "Winning the Cricket Trophy", "year": "2024", "category": "Sports" },
+  { "id": 9, "imageUrl": "https://picsum.photos/id/1060/1200/800", "caption": "Guest lecture on AI", "year": "2023", "category": "Technical" },
+  { "id": 10, "imageUrl": "https://picsum.photos/id/1074/1200/800", "caption": "Convocation Ceremony", "year": "2023", "category": "Campus Life" },
+  { "id": 11, "imageUrl": "https://picsum.photos/id/1084/1200/800", "caption": "Art and Craft Exhibition", "year": "2024", "category": "Cultural" },
+  { "id": 12, "imageUrl": "https://picsum.photos/id/122/1200/800", "caption": "Basketball practice session", "year": "2023", "category": "Sports" },
+  { "id": 13, "imageUrl": "https://picsum.photos/id/137/1200/800", "caption": "Robotics Club Showcase", "year": "2024", "category": "Technical" },
+  { "id": 14, "imageUrl": "https://picsum.photos/id/146/1200/800", "caption": "Library study session", "year": "2023", "category": "Campus Life" },
+  { "id": 15, "imageUrl": "https://picsum.photos/id/160/1200/800", "caption": "Drama Club's annual play", "year": "2024", "category": "Cultural" },
+  { "id": 16, "imageUrl": "https://picsum.photos/id/163/1200/800", "caption": "Marathon for a cause", "year": "2023", "category": "Sports" },
+  { "id": 17, "imageUrl": "https://picsum.photos/id/164/1200/800", "caption": "Final year project presentation", "year": "2024", "category": "Technical" },
+  { "id": 18, "imageUrl": "https://picsum.photos/id/175/1200/800", "caption": "Celebrating Holi on campus", "year": "2024", "category": "Cultural" },
+  { "id": 19, "imageUrl": "https://picsum.photos/id/180/1200/800", "caption": "Friends at the cafeteria", "year": "2023", "category": "Campus Life" },
+  { "id": 20, "imageUrl": "https://picsum.photos/id/193/1200/800", "caption": "Volleyball tournament finals", "year": "2023", "category": "Sports" }
+]

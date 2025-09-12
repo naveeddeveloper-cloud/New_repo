@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "imageUrl": "https://dailymedia.case.edu/wp-content/uploads/2019/05/15091016/commencement-banner-guards.jpg",
+    "title": "Welcome to TechFest 2025!",
+    "subtitle": "The biggest technical festival of the year is here. Are you ready to innovate?",
+    "callToActionText": "Explore Tech Events",
+    "callToActionLink": "/events"
+  },
+  {
+    "id": 2,
+    "imageUrl": "/public/images/ai.jpg",
+    "title": "Celebrate Creativity at Cultural Week",
+    "subtitle": "Experience a week of music, dance, and art that defines our campus spirit.",
+    "callToActionText": "See the Gallery",
+    "callToActionLink": "/gallery"
+  },
+  {
+    "id": 3,
+    "imageUrl": "/public/images/course_1663052056.jpg",
+    "title": "Join Our Vibrant Campus Community",
+    "subtitle": "Discover events, connect with clubs, and make your college experience unforgettable.",
+    "callToActionText": "Learn About Us",
+    "callToActionLink": "/about"
+  }
+]

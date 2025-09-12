@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "quote": "CampusConnect completely changed how I find events. I discovered the coding club through it and it's been the best part of my college life!",
+    "name": "Laiba shaikh",
+    "course": "B.Tech, Computer Science",
+    "avatar": "https://randomuser.me/api/portraits/women/44.jpg"
+  },
+  {
+    "id": 2,
+    "quote": "As a faculty member, promoting our department's symposium was never easier. The platform is intuitive and reaches every student instantly.",
+    "name": "Dr. Sajid ali khan",
+    "course": "Professor, Mechanical Engg.",
+    "avatar": "https://randomuser.me/api/portraits/men/32.jpg"
+  },
+  {
+    "id": 3,
+    "quote": "The gallery from the Annual Fest is amazing! It's so great to have all these memories in one place. The UI is clean and fast.",
+    "name": "neha",
+    "course": "B.A., Humanities",
+    "avatar": "https://randomuser.me/api/portraits/women/68.jpg"
+  }
+]
