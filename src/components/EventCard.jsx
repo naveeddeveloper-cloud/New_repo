@@ -1,56 +1,82 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react'; 
+import { motion } from 'framer-motion';
 
-// Helper functions for local storage
-const getBookmarks = () => JSON.parse(localStorage.getItem('bookmarks')) || [];
-const isBookmarked = (eventId) => getBookmarks().includes(eventId);
-const addBookmark = (eventId) => {
-  const bookmarks = getBookmarks();
-  if (!bookmarks.includes(eventId)) {
-    localStorage.setItem('bookmarks', JSON.stringify([...bookmarks, eventId]));
-  }
-};
-const removeBookmark = (eventId) => {
-  const bookmarks = getBookmarks();
-  localStorage.setItem('bookmarks', JSON.stringify(bookmarks.filter(id => id !== eventId)));
+// Helper function to format the date
+const formatDate = (dateString) => {
+    const options = { month: 'short', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString('en-US', options);
 };
 
-const EventCard = ({ event }) => {
-  const [isMarked, setIsMarked] = useState(false);
+// --- ADDED ---: A reusable Bookmark Icon component
+const BookmarkIcon = ({ filled }) => (
+    <svg 
+        xmlns="http://www.w3.org/2000/svg" 
+        className={`h-6 w-6 transition-colors duration-200 ${filled ? 'text-yellow-300' : 'text-white'}`}
+        fill={filled ? 'currentColor' : 'none'} 
+        viewBox="0 0 24 24" 
+        stroke="currentColor" 
+        strokeWidth={2}
+    >
+        <path strokeLinecap="round" strokeLinejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+    </svg>
+);
 
-  useEffect(() => {
-    setIsMarked(isBookmarked(event.id));
-  }, [event.id]);
 
-  const handleBookmarkToggle = () => {
-    if (isMarked) {
-      removeBookmark(event.id);
-    } else {
-      addBookmark(event.id);
-    }
-    setIsMarked(!isMarked);
-  };
+const EventCard = ({ event, onLearnMore }) => {
+    // Correct the image path by removing '/public'
+    const imageUrl = event.imagePath.replace('/public', '');
 
-  return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden transform hover:scale-105 transition-transform duration-300">
-      <img className="w-full h-48 object-cover" src={event.imagePath} alt={event.title} />
-      <div className="p-6">
-        <span className={`inline-block px-2 py-1 text-xs font-semibold rounded-full mb-2 ${event.category === 'Technical' ? 'bg-blue-100 text-blue-800' : event.category === 'Cultural' ? 'bg-purple-100 text-purple-800' : 'bg-green-100 text-green-800'}`}>
-          {event.category}
-        </span>
-        <h3 className="text-xl font-bold mb-2">{event.title}</h3>
-        <p className="text-gray-500 text-sm mb-2">{new Date(event.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })} | {event.time}</p>
-        <p className="text-gray-600 text-sm mb-4">{event.venue}</p>
-        <div className="flex justify-between items-center">
-          <a href="#" className="text-blue-600 hover:underline font-semibold">Learn More</a>
-          <button onClick={handleBookmarkToggle} className={`p-2 rounded-full transition-colors duration-200 ${isMarked ? 'bg-yellow-400 text-white' : 'bg-gray-200 text-gray-600 hover:bg-gray-300'}`}>
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-            </svg>
-          </button>
+    const [isBookmarked, setIsBookmarked] = useState(false);
+
+    // --- ADDED ---: Handler to toggle the bookmark state
+    const handleBookmarkClick = (e) => {
+        e.stopPropagation(); 
+        setIsBookmarked(!isBookmarked);
+       
+        console.log(`${event.title} is now ${!isBookmarked ? 'bookmarked' : 'unbookmarked'}`);
+    };
+
+    return (
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden flex flex-col h-full group">
+            <div className="relative">
+                <img src={imageUrl} alt={event.title} className="w-full h-48 object-cover" />
+                
+                {/* --- MODIFIED ---: Category pill moved to top-right */}
+                <div className="absolute top-3 right-3 bg-gradient-to-r from-black to-blue-900 border-black text-white text-xs font-bold px-2 py-1 rounded-full shadow-md">
+                    {event.category}
+                </div>
+
+                {/* --- ADDED ---: Bookmark Button */}
+                <motion.button
+                    onClick={handleBookmarkClick}
+                    className="absolute top-3 left-3 bg-black/40 backdrop-blur-sm rounded-full p-2 z-10"
+                    whileHover={{ scale: 1.1, backgroundColor: 'rgba(0,0,0,0.6)' }}
+                    whileTap={{ scale: 0.9 }}
+                >
+                    <BookmarkIcon filled={isBookmarked} />
+                </motion.button>
+            </div>
+            <div className="p-6 flex flex-col flex-grow">
+                <h3 className="text-xl font-bold text-gray-800 mb-2">{event.title}</h3>
+                <div className="flex items-center text-gray-500 text-sm mb-4">
+                    <span className="font-bold text-blue-600 text-lg mr-2">{formatDate(event.date)}</span>
+                    |
+                    <span className="ml-2">{event.venue}</span>
+                </div>
+                <p className="text-gray-600 text-sm flex-grow mb-6">
+                    {event.description.substring(0, 100)}...
+                </p>
+                <motion.button
+                    onClick={() => onLearnMore(event)}
+                    className="mt-auto w-full bg-gray-100 text-blue-600 font-semibold py-2 px-4 rounded-lg group-hover:bg-gradient-to-r from-black to-blue-900 border-black group-hover:text-white transition-colors duration-300"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                >
+                    Learn More
+                </motion.button>
+            </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 };
 
 export default EventCard;

@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import { React, useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Masonry from 'react-masonry-css';
 
-// 1. Import Lightbox and its CSS, plus any plugins you want
+// 1. Import Lightbox and its CSS
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
 import Captions from "yet-another-react-lightbox/plugins/captions";
@@ -18,7 +18,7 @@ const MasonryImageCard = ({ image, onClick }) => {
     return (
         <motion.div
             variants={zoomIn}
-            className="group relative block overflow-hidden rounded-xl cursor-pointer shadow-md hover:shadow-2xl transition-shadow duration-300 mb-4" // Added mb-4 for spacing in masonry
+            className="group relative block overflow-hidden rounded-xl cursor-pointer shadow-md hover:shadow-2xl transition-shadow duration-300 mb-4"
             onClick={onClick}
         >
             <img src={image.imageUrl} alt={image.caption} className="w-full h-auto object-cover" />
@@ -34,7 +34,8 @@ const MasonryImageCard = ({ image, onClick }) => {
 const GalleryPage = () => {
     const [allImages, setAllImages] = useState([]);
     const [activeCategory, setActiveCategory] = useState('All');
-    // 2. Update state to manage lightbox index instead of a single selected image
+    // --- ADDED ---: State to manage the selected year filter
+    const [activeYear, setActiveYear] = useState('All');
     const [lightboxIndex, setLightboxIndex] = useState(-1);
 
     useEffect(() => {
@@ -43,18 +44,31 @@ const GalleryPage = () => {
             .then(data => setAllImages(data));
     }, []);
 
+    // Memoize the list of unique categories
     const categories = useMemo(() => {
         if (allImages.length === 0) return ['All'];
         const uniqueCategories = new Set(allImages.map(img => img.category));
         return ['All', ...Array.from(uniqueCategories)];
     }, [allImages]);
 
+    // --- ADDED ---: Memoize the list of unique years, sorted descending
+    const years = useMemo(() => {
+        if (allImages.length === 0) return ['All'];
+        const uniqueYears = new Set(allImages.map(img => img.year));
+        // Sort years in descending order for better UX
+        const sortedYears = Array.from(uniqueYears).sort((a, b) => b.localeCompare(a));
+        return ['All', ...sortedYears];
+    }, [allImages]);
+
+    // --- MODIFIED ---: Update filtering logic to account for both category and year
     const filteredImages = useMemo(() => {
-        if (activeCategory === 'All') return allImages;
-        return allImages.filter(img => img.category === activeCategory);
-    }, [allImages, activeCategory]);
-    
-    // 3. Prepare the 'slides' array required by the lightbox from your filtered images
+        return allImages.filter(image => {
+            const categoryMatch = activeCategory === 'All' || image.category === activeCategory;
+            const yearMatch = activeYear === 'All' || image.year === activeYear;
+            return categoryMatch && yearMatch;
+        });
+    }, [allImages, activeCategory, activeYear]); // <-- Add activeYear to dependency array
+
     const slides = useMemo(() => {
         return filteredImages.map(image => ({
             src: image.imageUrl,
@@ -63,18 +77,15 @@ const GalleryPage = () => {
         }));
     }, [filteredImages]);
 
-
-    // Breakpoint columns for the Masonry layout
     const breakpointColumnsObj = {
         default: 4,
-        1280: 3, // xl
-        768: 2,  // md
-        640: 1   // sm
+        1280: 3,
+        768: 2,
+        640: 1
     };
 
     return (
         <div className="bg-gray-50 min-h-screen">
-            {/* Header Section */}
             <motion.section
                 variants={staggerContainer} initial="hidden" animate="visible"
                 className="bg-white shadow-sm"
@@ -86,12 +97,13 @@ const GalleryPage = () => {
             </motion.section>
 
             <div className="container mx-auto px-6 py-16">
-                {/* Modern Tab-based Filtering */}
+                {/* --- MODIFIED ---: Filter controls container */}
                 <motion.div
-                    className="flex justify-center mb-16"
+                    className="flex flex-col sm:flex-row justify-center items-center gap-4 mb-16" // <-- Use flexbox for alignment
                     initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.5 }}
                     variants={staggerContainer}
                 >
+                    {/* Category Filter Buttons */}
                     <div className="bg-white p-2 rounded-full shadow-lg flex flex-wrap justify-center gap-2">
                         {categories.map(category => (
                             <motion.button
@@ -102,7 +114,7 @@ const GalleryPage = () => {
                                 {activeCategory === category && (
                                     <motion.div
                                         layoutId="activeGalleryPill"
-                                        className="absolute inset-0 bg-blue-600 rounded-full"
+                                        className="absolute inset-0 bg-gradient-to-bl from-black to-blue-900 rounded-full"
                                         transition={{ type: 'spring', stiffness: 250, damping: 25 }}
                                     />
                                 )}
@@ -110,12 +122,27 @@ const GalleryPage = () => {
                             </motion.button>
                         ))}
                     </div>
+
+                    {/* --- ADDED ---: Year Filter Dropdown */}
+                    <motion.div variants={fadeInUp} className="relative">
+                        <select
+                            value={activeYear}
+                            onChange={(e) => setActiveYear(e.target.value)}
+                            className="bg-white py-2.5 px-5 rounded-full font-semibold text-gray-600 shadow-lg appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500 transition cursor-pointer"
+                        >
+                            {years.map(year => (
+                                <option key={year} value={year}>
+                                    {year === 'All' ? 'All Years' : year}
+                                </option>
+                            ))}
+                        </select>
+                    </motion.div>
                 </motion.div>
 
-                {/* Masonry Grid Section */}
                 <AnimatePresence mode="wait">
                     <motion.div
-                        key={activeCategory}
+                        // --- MODIFIED ---: Key now depends on both filters to trigger animation on any change
+                        key={`${activeCategory}-${activeYear}`}
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
@@ -131,7 +158,6 @@ const GalleryPage = () => {
                                     <MasonryImageCard
                                         key={image.id}
                                         image={image}
-                                        // 4. Update onClick to set the index of the clicked image
                                         onClick={() => setLightboxIndex(index)}
                                     />
                                 ))}
@@ -140,14 +166,13 @@ const GalleryPage = () => {
                             <div className="text-center py-20">
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-gray-400 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                                 <h3 className="text-2xl font-bold text-gray-700">No Images Found</h3>
-                                <p className="text-gray-500 mt-2">There are no images for this category yet. Please check back later!</p>
+                                <p className="text-gray-500 mt-2">No images match your filter criteria. Try selecting a different category or year!</p>
                             </div>
                         )}
                     </motion.div>
                 </AnimatePresence>
             </div>
 
-            {/* 5. Replace your old ImageModal with the new Lightbox component */}
             <Lightbox
                 open={lightboxIndex >= 0}
                 index={lightboxIndex}

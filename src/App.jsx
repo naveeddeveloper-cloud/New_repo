@@ -7,6 +7,8 @@ import EventsPage from './pages/EventsPage';
 import GalleryPage from './pages/GalleryPage';
 import FeedbackPage from './pages/FeedbackPage';
 import ContactPage from './pages/ContactPage';
+import EventRegistrationPage from './pages/EventRegistrationPage'; 
+
 
 function App() {
   return (
@@ -19,6 +21,8 @@ function App() {
             <Route path="/about" element={<AboutPage />} />
             <Route path="/events" element={<EventsPage />} />
             <Route path="/gallery" element={<GalleryPage />} />
+            <Route path="/events" element={<EventsPage />} />
+            <Route path="/register/:eventId" element={<EventRegistrationPage />} />
             <Route path="/feedback" element={<FeedbackPage />} />
             <Route path="/contact" element={<ContactPage />} />
           </Routes>

@@ -6,6 +6,8 @@ import { motion } from 'framer-motion';
 import EventCard from '../components/EventCard';
 import Counter from '../components/homepage/Counter';
 import CategoryCard from '../components/homepage/CategoryCard';
+import WelcomeModal from '../components/homepage/WelcomeModal';
+import UserProfile from '../components/homepage/UserProfile'; 
 
 // Swiper Imports
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -28,7 +30,12 @@ const HomePage = () => {
   const [banners, setBanners] = useState([]);
   const [upcomingEvents, setUpcomingEvents] = useState([]);
   const [testimonials, setTestimonials] = useState([]);
+  
+  // State management for user profile and modal
+  const [user, setUser] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // Fetch all page data (banners, events, testimonials)
   useEffect(() => {
     fetch('/data/banner.json').then(res => res.json()).then(setBanners);
     fetch('/data/events.json').then(res => res.json()).then(data => {
@@ -38,6 +45,31 @@ const HomePage = () => {
     fetch('/data/testimonials.json').then(res => res.json()).then(setTestimonials);
   }, []);
 
+  // Check for user in localStorage on initial load
+  useEffect(() => {
+    const savedUser = localStorage.getItem('eventAppUser');
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));
+    } else {
+      // If no user is saved, show the modal after a delay
+      const timer = setTimeout(() => setIsModalOpen(true), 1500);
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
+  // Function to save user data from the modal and store it
+  const handleSaveUser = (userData) => {
+    localStorage.setItem('eventAppUser', JSON.stringify(userData));
+    setUser(userData);
+    setIsModalOpen(false);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('eventAppUser');
+    setUser(null);
+    setIsModalOpen(true);
+  };
+
   const categories = [
     { icon: <TechnicalIcon />, title: "Technical", description: "Hackathons, workshops, and tech talks to sharpen your skills.", color: "text-blue-600", bgColor: "bg-blue-100" },
     { icon: <CulturalIcon />, title: "Cultural", description: "Celebrate diversity with music, dance, art, and festival events.", color: "text-purple-600", bgColor: "bg-purple-100" },
@@ -46,14 +78,15 @@ const HomePage = () => {
 
   return (
     <div className="bg-white overflow-x-hidden">
-      {/* 1. Hero Slideshow Section */}
-      <motion.section initial="hidden" animate="visible">
+      <motion.section initial="hidden" animate="visible" className="relative">
+        {user && <UserProfile user={user} onLogout={handleLogout} />}
+
         {banners.length > 0 && (
           <Swiper modules={[Navigation, Pagination, Autoplay, EffectFade]} slidesPerView={1} loop={true} autoplay={{ delay: 5000, disableOnInteraction: false }} effect="fade" fadeEffect={{ crossFade: true }} navigation={true} pagination={{ clickable: true }} className="h-96 md:h-[600px] w-full">
             {banners.map((banner) => (
               <SwiperSlide key={banner.id}>
                 <div style={{ backgroundImage: `url(${banner.imageUrl})` }} className="w-full h-full bg-center bg-cover">
-                  <div className="absolute inset-0 backdrop-blur-xs flex flex-col justify-center items-center text-center text-zinc-100 p-4">
+                  <div className="absolute inset-0 bg-black/40 flex flex-col justify-center items-center text-center text-white p-4">
                     <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="max-w-3xl">
                       <motion.h1 variants={fadeInDown} className="text-4xl md:text-6xl font-extrabold leading-tight mb-4">
                         {banner.title}
@@ -162,6 +195,8 @@ const HomePage = () => {
           </motion.div>
         </motion.div>
       </section>
+
+      <WelcomeModal isOpen={isModalOpen} onSave={handleSaveUser} />
     </div>
   );
 };

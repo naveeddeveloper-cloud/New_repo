@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { staggerContainer, fadeInUp, fadeInDown, zoomIn } from '../animations/variants';
-import { HiOutlineLocationMarker, HiOutlineMail, HiOutlinePhone } from 'react-icons/hi'; // Professional icons
+import { HiOutlineLocationMarker, HiOutlineMail, HiOutlinePhone } from 'react-icons/hi';
 
 // A new, more versatile Info Card component
 const InfoCard = ({ icon, title, lines }) => (
@@ -44,24 +44,53 @@ const ContactCard = ({ name, designation, department, email, phone }) => {
 const ContactPage = () => {
     const [contacts, setContacts] = useState([]);
     const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
+    // --- ADDED ---: State to hold validation errors for the form fields
+    const [formErrors, setFormErrors] = useState({});
 
     useEffect(() => {
         fetch('/data/contacts.json')
             .then(response => response.json())
             .then(data => setContacts(data));
     }, []);
-
+    
+    // --- MODIFIED ---: Updated input handler to include real-time validation
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData(prevState => ({ ...prevState, [name]: value }));
-    };
 
+        // --- ADDED ---: Real-time validation for the name field
+        if (name === 'name') {
+            const nameRegex = /^[a-zA-Z\s'-]+$/;
+            if (value && !nameRegex.test(value)) {
+                setFormErrors(prevErrors => ({ ...prevErrors, name: 'Name cannot contain numbers or symbols.' }));
+            } else {
+                // Clear the error if the input becomes valid
+                setFormErrors(prevErrors => {
+                    const newErrors = { ...prevErrors };
+                    delete newErrors.name;
+                    return newErrors;
+                });
+            }
+        }
+    };
+    
+    // --- MODIFIED ---: Updated submit handler to check for errors before submitting
     const handleSubmit = (e) => {
         e.preventDefault();
+        
+        // --- ADDED ---: Final check for errors before submission
+        if (formErrors.name || !formData.name.trim()) {
+            if (!formData.name.trim()) {
+                setFormErrors(prev => ({ ...prev, name: 'Name is required.'}));
+            }
+            return; // Stop the submission
+        }
+
         // Here you would typically send the data to a backend or service
         console.log('Form Submitted:', formData);
         alert(`Thank you, ${formData.name}! Your message has been sent.`);
         setFormData({ name: '', email: '', subject: '', message: '' }); // Reset form
+        setFormErrors({}); // --- ADDED ---: Clear all errors on successful submission
     };
 
     return (
@@ -114,7 +143,20 @@ const ContactPage = () => {
                         <h2 className="text-3xl font-bold text-gray-800 mb-2">Send Us a Message</h2>
                         <p className="text-gray-500 mb-8">Fill out the form below and we'll get back to you as soon as possible.</p>
                         <form onSubmit={handleSubmit} className="space-y-6">
-                            <input type="text" name="name" value={formData.name} onChange={handleInputChange} placeholder="Your Name" required className="w-full p-4 bg-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition" />
+                            {/* --- MODIFIED ---: Name input is now wrapped for error message display */}
+                            <div>
+                                <input type="text" name="name" value={formData.name} onChange={handleInputChange} placeholder="Your Name" required className="w-full p-4 bg-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition" />
+                                {/* --- ADDED ---: Error message display */}
+                                {formErrors.name && (
+                                    <motion.p 
+                                        initial={{ opacity: 0, y: -5 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        className="text-red-500 text-sm mt-1 ml-1"
+                                    >
+                                        {formErrors.name}
+                                    </motion.p>
+                                )}
+                            </div>
                             <input type="email" name="email" value={formData.email} onChange={handleInputChange} placeholder="Your Email" required className="w-full p-4 bg-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition" />
                             <input type="text" name="subject" value={formData.subject} onChange={handleInputChange} placeholder="Subject" required className="w-full p-4 bg-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition" />
                             <textarea name="message" value={formData.message} onChange={handleInputChange} placeholder="Your Message" rows="5" required className="w-full p-4 bg-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition"></textarea>
