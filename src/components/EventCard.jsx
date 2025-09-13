@@ -1,13 +1,11 @@
 import React, { useState } from 'react'; 
 import { motion } from 'framer-motion';
 
-// Helper function to format the date
 const formatDate = (dateString) => {
     const options = { month: 'short', day: 'numeric' };
     return new Date(dateString).toLocaleDateString('en-US', options);
 };
 
-// --- ADDED ---: A reusable Bookmark Icon component
 const BookmarkIcon = ({ filled }) => (
     <svg 
         xmlns="http://www.w3.org/2000/svg" 
@@ -23,12 +21,10 @@ const BookmarkIcon = ({ filled }) => (
 
 
 const EventCard = ({ event, onLearnMore }) => {
-    // Correct the image path by removing '/public'
     const imageUrl = event.imagePath.replace('/public', '');
 
     const [isBookmarked, setIsBookmarked] = useState(false);
 
-    // --- ADDED ---: Handler to toggle the bookmark state
     const handleBookmarkClick = (e) => {
         e.stopPropagation(); 
         setIsBookmarked(!isBookmarked);
@@ -41,12 +37,10 @@ const EventCard = ({ event, onLearnMore }) => {
             <div className="relative">
                 <img src={imageUrl} alt={event.title} className="w-full h-48 object-cover" />
                 
-                {/* --- MODIFIED ---: Category pill moved to top-right */}
                 <div className="absolute top-3 right-3 bg-gradient-to-r from-black to-blue-900 border-black text-white text-xs font-bold px-2 py-1 rounded-full shadow-md">
                     {event.category}
                 </div>
 
-                {/* --- ADDED ---: Bookmark Button */}
                 <motion.button
                     onClick={handleBookmarkClick}
                     className="absolute top-3 left-3 bg-black/40 backdrop-blur-sm rounded-full p-2 z-10"

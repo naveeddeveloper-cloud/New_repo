@@ -1,9 +1,7 @@
-// src/components/EventModal.js
-import React from 'react';
+import React from 'react'; 
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom'; // --- ADDED ---: Import Link for navigation
+import { Link } from 'react-router-dom'; 
 
-// Icons for the modal details
 const CalendarIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>;
 const ClockIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>;
 const LocationIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>;
@@ -17,7 +15,6 @@ const EventModal = ({ event, onClose }) => {
         weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
     });
 
-    // --- ADDED ---: Check if the event is in the past
     const isPastEvent = event.status === 'past';
 
     return (
@@ -26,7 +23,7 @@ const EventModal = ({ event, onClose }) => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4"
-            onClick={onClose} // Close modal on backdrop click
+            onClick={onClose} 
         >
             <motion.div
                 initial={{ scale: 0.8, y: 50 }}
@@ -34,7 +31,7 @@ const EventModal = ({ event, onClose }) => {
                 exit={{ scale: 0.8, y: 50 }}
                 transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                 className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto flex flex-col"
-                onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside the modal
+                onClick={(e) => e.stopPropagation()} 
             >
                 <div className="relative">
                     <img src={imageUrl} alt={event.title} className="w-full h-64 object-cover rounded-t-2xl" />
@@ -57,7 +54,6 @@ const EventModal = ({ event, onClose }) => {
 
                     <p className="text-gray-700 leading-relaxed mb-8">{event.description}</p>
                     
-                    {/* --- MODIFIED ---: Conditionally render a Link or a disabled button */}
                     {isPastEvent ? (
                         <button
                             disabled

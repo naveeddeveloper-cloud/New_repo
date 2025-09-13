@@ -8,6 +8,9 @@ import GalleryPage from './pages/GalleryPage';
 import FeedbackPage from './pages/FeedbackPage';
 import ContactPage from './pages/ContactPage';
 import EventRegistrationPage from './pages/EventRegistrationPage'; 
+import './styles/Calendar.css'; 
+import CalendarPage from './pages/CalendarPage'; 
+
 
 
 function App() {
@@ -22,6 +25,7 @@ function App() {
             <Route path="/events" element={<EventsPage />} />
             <Route path="/gallery" element={<GalleryPage />} />
             <Route path="/events" element={<EventsPage />} />
+            <Route path="/calendar" element={<CalendarPage />} /> 
             <Route path="/register/:eventId" element={<EventRegistrationPage />} />
             <Route path="/feedback" element={<FeedbackPage />} />
             <Route path="/contact" element={<ContactPage />} />
