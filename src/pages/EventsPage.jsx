@@ -1,145 +1,181 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import Calendar from 'react-calendar';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
+import { useSearchParams, Link } from 'react-router-dom'; // --- ADDED ---: Import Link
+import EventCard from '../components/EventCard';
+import EventModal from '../components/EventModal';
 import { staggerContainer, fadeInUp, fadeInDown, zoomIn } from '../animations/variants';
 
-// A more professional icon for the "no events" state
-const NoEventsIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-slate-300 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0h18M-4.5 12h22.5" /></svg>;
-const ArrowRightIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>;
+// Icons for the UI
+const SearchIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>;
+const NoResultsIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-gray-400 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>;
 
-// Map categories to colors for our markers and badges
-const categoryColors = {
-    "Workshop": "bg-blue-500",
-    "Social": "bg-pink-500",
-    "Academic": "bg-purple-500",
-    "Sports": "bg-green-500",
-    "Career": "bg-yellow-500",
-    "Other": "bg-slate-500",
-};
+// --- ADDED ---: Icon for the new calendar button
+const CalendarIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>;
 
-const CalendarPage = () => {
+
+const EventsPage = () => {
+    const [searchParams] = useSearchParams();
+
+    // ... (All your existing state and useEffect hooks remain exactly the same)
     const [allEvents, setAllEvents] = useState([]);
-    const [activeDate, setActiveDate] = useState(new Date());
-    const navigate = useNavigate();
+    const [filteredEvents, setFilteredEvents] = useState([]);
+    const [featuredEvent, setFeaturedEvent] = useState(null);
+    const [availableYears, setAvailableYears] = useState([]);
+    const [selectedEvent, setSelectedEvent] = useState(null);
+    const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
+    const [categoryFilter, setCategoryFilter] = useState('All');
+    const [statusFilter, setStatusFilter] = useState('Upcoming');
+    const [yearFilter, setYearFilter] = useState('All');
+    const [sortBy, setSortBy] = useState('date-asc');
 
-    // Fetch all events on initial render
+    const handleOpenModal = (event) => { setSelectedEvent(event); };
+    const handleCloseModal = () => { setSelectedEvent(null); };
+
     useEffect(() => {
         fetch('/data/events.json')
             .then(response => response.json())
-            .then(data => setAllEvents(data));
+            .then(data => {
+                const sortedData = data.sort((a, b) => new Date(a.date) - new Date(b.date));
+                setAllEvents(sortedData);
+                const featured = sortedData.find(event => event.featured && new Date(event.date) >= new Date());
+                setFeaturedEvent(featured);
+                const years = [...new Set(data.map(event => new Date(event.date).getFullYear()))];
+                years.sort((a, b) => b - a);
+                setAvailableYears(['All', ...years]);
+            });
     }, []);
 
-    // Memoize events mapped by date for performance
-    const eventsByDate = useMemo(() => {
-        const map = new Map();
-        allEvents.forEach(event => {
-            const eventDate = new Date(event.date).toDateString();
-            if (!map.has(eventDate)) {
-                map.set(eventDate, []);
-            }
-            map.get(eventDate).push(event);
-        });
-        return map;
-    }, [allEvents]);
-
-    const eventsForSelectedDate = eventsByDate.get(activeDate.toDateString()) || [];
-
-    // Function to add multiple, color-coded markers to dates with events
-    const markEventsOnCalendar = ({ date, view }) => {
-        if (view === 'month') {
-            const eventsOnDate = eventsByDate.get(date.toDateString());
-            if (eventsOnDate && eventsOnDate.length > 0) {
-                return (
-                    <div className="flex justify-center items-center absolute bottom-2 w-full gap-1">
-                        {eventsOnDate.slice(0, 3).map((event, i) => ( // Show max 3 dots
-                            <span key={i} className={`w-2 h-2 rounded-full ${categoryColors[event.category] || categoryColors['Other']}`}></span>
-                        ))}
-                    </div>
-                );
-            }
+    useEffect(() => {
+        let processedEvents = [...allEvents];
+        if (statusFilter !== 'All') {
+            const now = new Date();
+            now.setHours(0, 0, 0, 0);
+            processedEvents = processedEvents.filter(event => {
+                const eventDate = new Date(event.date);
+                eventDate.setHours(0, 0, 0, 0);
+                return statusFilter === 'Upcoming' ? eventDate >= now : eventDate < now;
+            });
         }
-        return null;
-    };
-    
-    // Navigate to the main events page to show details
-    const handleViewDetails = (event) => {
-        navigate(`/events?search=${encodeURIComponent(event.title)}`);
-    }
+        if (categoryFilter !== 'All') { processedEvents = processedEvents.filter(event => event.category === categoryFilter); }
+        if (yearFilter !== 'All') { processedEvents = processedEvents.filter(event => new Date(event.date).getFullYear() === parseInt(yearFilter, 10)); }
+        if (searchTerm) {
+            processedEvents = processedEvents.filter(event =>
+                event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                event.description.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+        }
+        processedEvents.sort((a, b) => {
+            if (sortBy === 'date-asc') return new Date(a.date) - new Date(b.date);
+            if (sortBy === 'date-desc') return new Date(b.date) - new Date(a.date);
+            if (sortBy === 'name-asc') return a.title.localeCompare(b.title);
+            return 0;
+        });
+        setFilteredEvents(processedEvents);
+    }, [allEvents, searchTerm, categoryFilter, statusFilter, yearFilter, sortBy]);
+
+    const categories = ['All', ...[...new Set(allEvents.map(e => e.category))].sort()];
+    const statuses = ['Upcoming', 'Past', 'All'];
 
     return (
-        <div className="bg-slate-50 min-h-screen">
-            {/* Header Section */}
-            <motion.section variants={fadeInDown} initial="hidden" animate="visible" className="bg-gradient-to-r from-blue-600 to-slate-900 text-white text-center py-20">
-                <h1 className="text-5xl font-extrabold tracking-tight">Events Calendar</h1>
-                <p className="text-xl mt-4 max-w-2xl mx-auto text-slate-200">A visual guide to what's happening on campus.</p>
+        <div className="bg-gray-50 min-h-screen">
+            {/* ... (Header and Featured Event sections are unchanged) ... */}
+            <motion.section variants={fadeInDown} initial="hidden" animate="visible" className="bg-gradient-to-r from-blue-600 to-black text-white text-center py-20">
+                <h1 className="text-5xl font-extrabold">Find Your Next Experience</h1>
+                <p className="text-xl mt-4 max-w-2xl mx-auto">The complete guide to every event happening on campus.</p>
             </motion.section>
-
-            <div className="container mx-auto px-4 lg:px-6 py-16">
-                <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true }} className="grid grid-cols-1 lg:grid-cols-5 gap-8">
-                    
-                    {/* Calendar View */}
-                    <motion.div variants={fadeInUp} className="lg:col-span-3 bg-white p-4 sm:p-6 rounded-2xl shadow-lg">
-                         <Calendar
-                            onChange={setActiveDate}
-                            value={activeDate}
-                            tileContent={markEventsOnCalendar}
-                            className="react-calendar"
-                        />
-                    </motion.div>
-
-                    {/* Events for Selected Day */}
-                    <motion.div variants={fadeInUp} className="lg:col-span-2 bg-white rounded-2xl shadow-lg flex flex-col">
-                        <div className="p-6 border-b border-slate-200">
-                            <p className="text-sm font-semibold text-blue-600">{activeDate.toLocaleDateString('en-US', { weekday: 'long' })}</p>
-                            <h2 className="text-3xl font-bold text-slate-800">
-                                {activeDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}
-                            </h2>
+            
+            {featuredEvent && statusFilter !== 'Past' && yearFilter === 'All' && (
+                <motion.section variants={fadeInUp} initial="hidden" animate="visible" transition={{ delay: 0.2 }} className="container mx-auto px-6 -mt-10">
+                    <div className="bg-white rounded-2xl shadow-2xl p-6 md:p-8 flex flex-col md:flex-row items-center gap-8 ring-4 ring-yellow-400 ring-opacity-50">
+                        <img src={featuredEvent.imagePath} alt={featuredEvent.title} className="w-full md:w-1/3 h-64  md:h-auto object-cover rounded-lg"/>
+                        <div className="flex-1">
+                            <span className="bg-yellow-400 text-yellow-900 font-bold px-3 py-1 rounded-full text-sm">FEATURED EVENT</span>
+                            <h2 className="text-3xl font-bold text-gray-800 mt-4">{featuredEvent.title}</h2>
+                            <p className="text-gray-500 mt-2">{new Date(featuredEvent.date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                            <p className="text-gray-600 mt-4">{featuredEvent.description.substring(0, 150)}...</p>
+                            <button onClick={() => handleOpenModal(featuredEvent)} className="inline-block mt-6 bg-blue-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-700 transition">Learn More & Register</button>
                         </div>
+                    </div>
+                </motion.section>
+            )}
+
+            <div className="container mx-auto px-6 py-16">
+                {/* Controls Panel */}
+                <motion.div
+                    variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }}
+                    className="bg-white p-6 rounded-xl shadow-lg mb-12 space-y-6"
+                >
+                    {/* Top Row: Search, Sort, and NEW Calendar Button */}
+                    <div className="flex flex-col md:flex-row gap-4">
+                        <motion.div variants={fadeInUp} className="relative flex-grow">
+                            <SearchIcon />
+                            <input type="text" placeholder="Search for events by name or keyword..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition" />
+                        </motion.div>
                         
-                        <div className="flex-grow p-6 overflow-y-auto" style={{maxHeight: '600px'}}>
-                            <AnimatePresence mode="wait">
-                                {eventsForSelectedDate.length > 0 ? (
-                                    <motion.ul 
-                                      key={activeDate.toDateString()} // Key change triggers animation
-                                      initial={{ opacity: 0 }}
-                                      animate={{ opacity: 1, transition: { staggerChildren: 0.1 } }}
-                                      exit={{ opacity: 0 }}
-                                      className="space-y-4"
-                                    >
-                                        {eventsForSelectedDate.map(event => (
-                                            <motion.li key={event.id} variants={fadeInUp}>
-                                                <div className="flex items-start gap-4 p-4 rounded-lg bg-slate-50 hover:bg-slate-100 transition-colors group">
-                                                    <img src={event.imagePath} alt={event.title} className="w-16 h-16 rounded-md object-cover flex-shrink-0" />
-                                                    <div className="flex-grow">
-                                                        <span className={`px-2 py-0.5 text-xs font-bold text-white rounded-full ${categoryColors[event.category] || categoryColors['Other']}`}>{event.category}</span>
-                                                        <h3 className="font-bold text-slate-900 mt-1">{event.title}</h3>
-                                                        <p className="text-sm text-slate-500">{event.time}</p>
-                                                        <button 
-                                                            onClick={() => handleViewDetails(event)}
-                                                            className="text-sm mt-2 font-bold text-blue-600 hover:text-blue-800 flex items-center opacity-0 group-hover:opacity-100 transition-opacity"
-                                                        >
-                                                            View Details <ArrowRightIcon />
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </motion.li>
-                                        ))}
-                                    </motion.ul>
-                                ) : (
-                                    <motion.div key="no-events" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-center py-10 h-full flex flex-col justify-center">
-                                        <NoEventsIcon />
-                                        <p className="font-semibold text-slate-700 mt-4">No Events Scheduled</p>
-                                        <p className="text-sm text-slate-500">Select another date to see what's on.</p>
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
-                        </div>
-                    </motion.div>
+                        {/* --- ADDED ---: The Calendar View Button */}
+                        <motion.div variants={fadeInUp}>
+                            <Link 
+                                to="/calendar" 
+                                className="flex items-center justify-center h-full w-full md:w-auto px-5 py-3 border border-gray-300 rounded-lg font-semibold text-gray-700 bg-white hover:bg-gray-100 transition whitespace-nowrap gap-2"
+                            >
+                                <CalendarIcon />
+                                <span>Calendar View</span>
+                            </Link>
+                        </motion.div>
+                        
+                        <motion.div variants={fadeInUp} className="flex items-center gap-2">
+                             <label htmlFor="sort" className="font-semibold text-gray-700 shrink-0">Sort by:</label>
+                             <select id="sort" value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="w-full md:w-auto p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
+                                <option value="date-asc">Date (Soonest First)</option>
+                                <option value="date-desc">Date (Latest First)</option>
+                                <option value="name-asc">Name (A-Z)</option>
+                             </select>
+                        </motion.div>
+                    </div>
+
+                    {/* ... (The rest of the component is unchanged) ... */}
+                    <div className="space-y-4 pt-4 border-t border-gray-200">
+                        <motion.div variants={fadeInUp}>
+                            <h3 className="font-semibold text-gray-700 mb-2">Year</h3>
+                            <div className="flex flex-wrap gap-2">{availableYears.map(year => (<button key={year} onClick={() => setYearFilter(year)} className={`px-4 py-2 rounded-full font-semibold transition text-sm ${yearFilter === year ? 'bg-blue-600 text-white shadow-md' : 'bg-gray-200 text-gray-800 hover:bg-gray-300'}`}>{year}</button>))}</div>
+                        </motion.div>
+                        <motion.div variants={fadeInUp}>
+                            <h3 className="font-semibold text-gray-700 mb-2">Status</h3>
+                            <div className="flex flex-wrap gap-2">{statuses.map(status => (<button key={status} onClick={() => setStatusFilter(status)} className={`px-4 py-2 rounded-full font-semibold transition text-sm ${statusFilter === status ? 'bg-blue-600 text-white shadow-md' : 'bg-gray-200 text-gray-800 hover:bg-gray-300'}`}>{status}</button>))}</div>
+                        </motion.div>
+                        <motion.div variants={fadeInUp}>
+                             <h3 className="font-semibold text-gray-700 mb-2">Category</h3>
+                             <div className="flex flex-wrap gap-2">{categories.map(cat => (<button key={cat} onClick={() => setCategoryFilter(cat)} className={`px-4 py-2 rounded-full font-semibold transition text-sm ${categoryFilter === cat ? 'bg-blue-600 text-white shadow-md' : 'bg-gray-200 text-gray-800 hover:bg-gray-300'}`}>{cat}</button>))}</div>
+                        </motion.div>
+                    </div>
+                </motion.div>
+
+                {/* Events Grid */}
+                <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <AnimatePresence>
+                        {filteredEvents.length > 0 ? (
+                            filteredEvents.map(event => (
+                                <motion.div key={event.id} variants={zoomIn} layout initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.8 }} transition={{ type: 'spring', stiffness: 200, damping: 25 }}>
+                                    <EventCard event={event} onLearnMore={handleOpenModal} />
+                                </motion.div>
+                            ))
+                        ) : (
+                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="col-span-full text-center py-20">
+                                <NoResultsIcon/>
+                                <h3 className="text-2xl font-bold text-gray-700">No Events Found</h3>
+                                <p className="text-gray-500 mt-2">Try adjusting your search or filters to find what you're looking for.</p>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </motion.div>
             </div>
+
+            {/* Render the modal */}
+            <AnimatePresence>
+                {selectedEvent && ( <EventModal event={selectedEvent} onClose={handleCloseModal} /> )}
+            </AnimatePresence>
         </div>
     );
 };
 
-export default CalendarPage;
+export default EventsPage;
