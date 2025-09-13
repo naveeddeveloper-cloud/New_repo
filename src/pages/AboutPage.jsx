@@ -80,28 +80,31 @@ const AboutPage = () => {
                         <motion.p variants={fadeInUp} className="text-lg text-gray-600 mt-4">Tracing our journey through key milestones.</motion.p>
                     </motion.div>
 
-                    <div className="relative wrap overflow-hidden p-10 h-full">
-                        <div className="absolute h-full border border-gray-200" style={{ left: '50%' }}></div>
-                        {timelineData.map((item, index) => (
-                            <motion.div 
-                                key={index} 
-                                variants={fadeInUp}
-                                initial="hidden"
-                                whileInView="visible"
-                                viewport={{ once: true }}
-                                className={`mb-8 flex justify-between items-center w-full ${index % 2 === 0 ? 'flex-row-reverse left-timeline' : 'right-timeline'}`}
-                            >
-                                <div className="order-1 w-5/12"></div>
-                                <div className="z-20 flex items-center order-1 bg-blue-600 shadow-xl w-8 h-8 rounded-full">
-                                    <h1 className="mx-auto font-semibold text-lg text-white">{index + 1}</h1>
-                                </div>
-                                <div className="order-1 bg-white rounded-lg shadow-xl w-5/12 px-6 py-4">
-                                    <h3 className="mb-3 font-bold text-gray-800 text-xl">{item.year} - {item.title}</h3>
-                                    <p className="text-sm leading-snug tracking-wide text-gray-600">{item.description}</p>
-                                </div>
-                            </motion.div>
-                        ))}
-                    </div>
+                  <div className="relative container mx-auto px-6 py-10 h-full">
+ 
+    <div className="absolute z-0 w-1 h-full bg-gray-200 shadow-md left-6 md:left-1/2 md:-translate-x-1/2"></div>
+    
+    {timelineData.map((item, index) => (
+        <motion.div
+            key={index}
+            variants={fadeInUp}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
+            className={`relative mb-8 pl-14 md:pl-0 ${index % 2 === 0 ? 'md:flex md:flex-row-reverse' : 'md:flex'}`}
+        >
+            <div className="absolute z-10 flex items-center bg-blue-600 shadow-xl w-8 h-8 rounded-full left-6 -translate-x-1/2 md:left-1/2 top-1">
+                <h1 className="mx-auto font-semibold text-lg text-white">{index + 1}</h1>
+            </div>
+            <div className="bg-white rounded-lg shadow-xl w-full md:w-1/2 px-6 py-4 md:px-8">
+                <div className={`${index % 2 === 0 ? 'md:text-right' : ''}`}>
+                    <h3 className="font-bold text-blue-900 text-xl">{item.year} - {item.title}</h3>
+                    <p className="mt-2 text-sm leading-snug tracking-wide text-gray-600">{item.description}</p>
+                </div>
+            </div>
+        </motion.div>
+    ))}
+</div>
                 </div>
             </section>
             

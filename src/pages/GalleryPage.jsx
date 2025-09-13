@@ -34,7 +34,6 @@ const MasonryImageCard = ({ image, onClick }) => {
 const GalleryPage = () => {
     const [allImages, setAllImages] = useState([]);
     const [activeCategory, setActiveCategory] = useState('All');
-    // --- ADDED ---: State to manage the selected year filter
     const [activeYear, setActiveYear] = useState('All');
     const [lightboxIndex, setLightboxIndex] = useState(-1);
 
@@ -44,30 +43,26 @@ const GalleryPage = () => {
             .then(data => setAllImages(data));
     }, []);
 
-    // Memoize the list of unique categories
     const categories = useMemo(() => {
         if (allImages.length === 0) return ['All'];
         const uniqueCategories = new Set(allImages.map(img => img.category));
         return ['All', ...Array.from(uniqueCategories)];
     }, [allImages]);
 
-    // --- ADDED ---: Memoize the list of unique years, sorted descending
     const years = useMemo(() => {
         if (allImages.length === 0) return ['All'];
         const uniqueYears = new Set(allImages.map(img => img.year));
-        // Sort years in descending order for better UX
         const sortedYears = Array.from(uniqueYears).sort((a, b) => b.localeCompare(a));
         return ['All', ...sortedYears];
     }, [allImages]);
 
-    // --- MODIFIED ---: Update filtering logic to account for both category and year
     const filteredImages = useMemo(() => {
         return allImages.filter(image => {
             const categoryMatch = activeCategory === 'All' || image.category === activeCategory;
             const yearMatch = activeYear === 'All' || image.year === activeYear;
             return categoryMatch && yearMatch;
         });
-    }, [allImages, activeCategory, activeYear]); // <-- Add activeYear to dependency array
+    }, [allImages, activeCategory, activeYear]);
 
     const slides = useMemo(() => {
         return filteredImages.map(image => ({
@@ -97,38 +92,38 @@ const GalleryPage = () => {
             </motion.section>
 
             <div className="container mx-auto px-6 py-16">
-                {/* --- MODIFIED ---: Filter controls container */}
+                {/* --- Unified Filter Toolbar --- */}
                 <motion.div
-                    className="flex flex-col sm:flex-row justify-center items-center gap-4 mb-16" // <-- Use flexbox for alignment
+                    className="bg-white p-4 rounded-xl shadow-lg mb-12 flex flex-col md:flex-row justify-between items-center gap-6"
                     initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.5 }}
-                    variants={staggerContainer}
+                    variants={staggerContainer} // The container itself will still fade in
                 >
-                    {/* Category Filter Buttons */}
-                    <div className="bg-white p-2 rounded-full shadow-lg flex flex-wrap justify-center gap-2">
+                    {/* --- CHANGED: Category Filter with NO ANIMATION --- */}
+                    <div className="flex flex-wrap items-center gap-2 border-b-2 md:border-b-0 pb-2 md:pb-0">
                         {categories.map(category => (
-                            <motion.button
-                                key={category} variants={fadeInUp}
+                            <button // <-- Changed from motion.button
+                                key={category}
                                 onClick={() => setActiveCategory(category)}
-                                className={`px-4 md:px-6 py-2 rounded-full font-semibold text-sm md:text-base transition-colors duration-300 relative ${activeCategory === category ? 'text-white' : 'text-gray-600 hover:bg-gray-100'}`}
+                                className={`px-4 py-2.5 font-medium text-sm md:text-base transition-colors duration-300 relative ${activeCategory === category ? 'text-blue-600' : 'text-gray-500 hover:text-blue-600'}`}
+                                style={{ WebkitTapHighlightColor: "transparent" }}
                             >
+                                <span className="relative z-10">{category}</span>
                                 {activeCategory === category && (
-                                    <motion.div
-                                        layoutId="activeGalleryPill"
-                                        className="absolute inset-0 bg-gradient-to-bl from-black to-blue-900 rounded-full"
-                                        transition={{ type: 'spring', stiffness: 250, damping: 25 }}
+                                    <div // <-- Changed from motion.div
+                                        className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600 rounded-full"
+                                        // Removed layoutId and transition props
                                     />
                                 )}
-                                <span className="relative z-10">{category}</span>
-                            </motion.button>
+                            </button>
                         ))}
                     </div>
 
-                    {/* --- ADDED ---: Year Filter Dropdown */}
-                    <motion.div variants={fadeInUp} className="relative">
+                    {/* --- Year Filter Dropdown --- */}
+                    <motion.div variants={fadeInUp} className="relative w-full md:w-auto">
                         <select
                             value={activeYear}
                             onChange={(e) => setActiveYear(e.target.value)}
-                            className="bg-white py-2.5 px-5 rounded-full font-semibold text-gray-600 shadow-lg appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500 transition cursor-pointer"
+                            className="w-full bg-gray-100 py-2.5 pl-5 pr-10 rounded-full font-semibold text-gray-600 border border-transparent appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition cursor-pointer"
                         >
                             {years.map(year => (
                                 <option key={year} value={year}>
@@ -136,12 +131,14 @@ const GalleryPage = () => {
                                 </option>
                             ))}
                         </select>
+                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-700">
+                           <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                        </div>
                     </motion.div>
                 </motion.div>
 
                 <AnimatePresence mode="wait">
                     <motion.div
-                        // --- MODIFIED ---: Key now depends on both filters to trigger animation on any change
                         key={`${activeCategory}-${activeYear}`}
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
