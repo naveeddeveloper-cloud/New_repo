@@ -83,3 +83,92 @@
            focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent
            transition duration-200 ease-in-out;
   }}
+  /* === React Calendar Custom Styling === */
+
+.react-calendar {
+  width: 100%;
+  border: none;
+  font-family: inherit;
+  line-height: 1.125em;
+  border-radius: 0.5rem;
+}
+
+/* --- Navigation --- */
+.react-calendar__navigation {
+  display: flex;
+  height: 44px;
+  margin-bottom: 1em;
+}
+
+.react-calendar__navigation button {
+  min-width: 44px;
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #334155; /* slate-700 */
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.react-calendar__navigation button:hover {
+  background-color: #f1f5f9; /* slate-100 */
+}
+
+.react-calendar__navigation__label {
+  flex-grow: 1 !important;
+}
+
+/* --- Month View --- */
+.react-calendar__month-view__weekdays {
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.75em;
+  color: #64748b; /* slate-500 */
+  text-transform: uppercase;
+}
+
+.react-calendar__month-view__weekdays__weekday {
+  padding: 0.5em;
+}
+
+.react-calendar__month-view__days__day--neighboringMonth {
+  color: #cbd5e1; /* slate-300 */
+}
+
+/* --- Tiles (Days) --- */
+.react-calendar__tile {
+  max-width: 100%;
+  padding: 10px 6.6667px;
+  background: none;
+  text-align: center;
+  line-height: 16px;
+  border: none;
+  height: 70px; /* Adjust height as needed */
+  position: relative;
+  cursor: pointer;
+  border-radius: 0.5rem;
+  transition: background-color 0.2s;
+}
+
+.react-calendar__tile:hover {
+  background-color: #f1f5f9; /* slate-100 */
+}
+
+/* Active / Selected Day */
+.react-calendar__tile--active {
+  background-color: #2563eb !important; /* blue-600 */
+  color: white;
+}
+.react-calendar__tile--active:hover {
+  background-color: #1d4ed8 !important; /* blue-700 */
+}
+
+/* Today's Date */
+.react-calendar__tile--now {
+  background-color: #e0e7ff; /* indigo-100 */
+  font-weight: bold;
+}
+.react-calendar__tile--now:hover {
+  background-color: #c7d2fe; /* indigo-200 */
+}

@@ -9,7 +9,7 @@
     "category": "Technical",
     "department": "Computer Science",
     "organizer": "Tech Club",
-    "imagePath": "/public/images/techwiz.webp",
+    "imagePath": "/images/techwiz.jpeg",
     "status": "upcoming",
     "featured": true 
   },
@@ -17,13 +17,13 @@
     "id": 2,
     "title": "Cultural Week Kick-off",
     "description": "Join us for the start of the annual cultural week with music, dance, and drama performances.",
-    "date": "2025-08-05",
+    "date": "2025-09-14",
     "time": "5:00 PM onwards",
     "venue": "Open Air Theatre",
     "category": "Cultural",
     "department": "All",
     "organizer": "Student Council",
-    "imagePath": "/public/images/culture.jpg",
+    "imagePath": "/images/culture.jpg",
     "status": "upcoming",
     "featured": true 
   },
@@ -37,7 +37,7 @@
     "category": "Technical",
     "department": "Mechanical Engineering",
     "organizer": "Robotics Club",
-    "imagePath": "/public/images/science.jpg",
+    "imagePath": "/images/science.jpg",
     "status": "past",
     "featured": true 
   },
@@ -51,7 +51,7 @@
     "category": "Sports",
     "department": "All",
     "organizer": "Sports Committee",
-    "imagePath": "/public/images/sport.jpg",
+    "imagePath": "/images/sport.jpg",
     "status": "upcoming",
     "featured": false
   },
@@ -65,7 +65,7 @@
     "category": "Academic",
     "department": "Computer Science",
     "organizer": "Academics Department",
-    "imagePath": "/public/images/machine.jpg",
+    "imagePath": "/images/machine.jpg",
     "status": "upcoming",
     "featured": true
   },
@@ -79,7 +79,7 @@
     "category": "Career",
     "department": "All",
     "organizer": "Placement Cell",
-    "imagePath": "/public/images/handshake.jpg",
+    "imagePath": "/images/handshake.jpg",
     "status": "upcoming",
     "featured": true
   },
@@ -93,7 +93,7 @@
     "category": "Cultural",
     "department": "All",
     "organizer": "Music Club",
-    "imagePath": "/public/images/music.webp",
+    "imagePath": "/images/music.jpeg",
     "status": "upcoming",
     "featured": false
   },
@@ -107,7 +107,7 @@
     "category": "Workshop",
     "department": "Computer Science",
     "organizer": "Coding Club",
-    "imagePath": "/public/images/web-developments.webp",
+    "imagePath": "/images/web-developments.jpeg",
     "status": "upcoming",
     "featured": false
   },
@@ -121,7 +121,7 @@
     "category": "Networking",
     "department": "All",
     "organizer": "Alumni Association",
-    "imagePath": "/public/images/images.png",
+    "imagePath": "/images/images.png",
     "status": "upcoming",
     "featured": true
   },
@@ -135,7 +135,7 @@
     "category": "Social",
     "department": "All",
     "organizer": "NSS Wing",
-    "imagePath": "/public/images/blood.jpg",
+    "imagePath": "/images/blood.jpg",
     "status": "upcoming",
     "featured": false
   },
@@ -149,7 +149,7 @@
     "category": "Cultural",
     "department": "All",
     "organizer": "Drama Club",
-    "imagePath": "/public/images/images.jpeg",
+    "imagePath": "/images/images.jpeg",
     "status": "upcoming",
     "featured": false
   },
@@ -163,7 +163,7 @@
     "category": "Academic",
     "department": "All",
     "organizer": "Administration",
-    "imagePath": "/public/images/lecture.jpg",
+    "imagePath": "/images/lecture.jpg",
     "status": "past",
     "featured": true
   },
@@ -177,7 +177,7 @@
     "category": "Sports",
     "department": "All",
     "organizer": "Sports Committee",
-    "imagePath": "/public/images/crick.jpg",
+    "imagePath": "/images/crick.jpg",
     "status": "past",
     "featured": false
   },
@@ -191,7 +191,7 @@
     "category": "Cultural",
     "department": "All",
     "organizer": "Fine Arts Club",
-    "imagePath": "/public/images/art.jpg",
+    "imagePath": "/images/art.jpg",
     "status": "past",
     "featured": false
   },
@@ -205,7 +205,7 @@
     "category": "Academic",
     "department": "Computer Science",
     "organizer": "Academics Department",
-    "imagePath": "/public/images/open.png",
+    "imagePath": "/images/open.png",
     "status": "past",
     "featured": false
   },
@@ -219,7 +219,7 @@
     "category": "Cultural",
     "department": "All",
     "organizer": "Student Council",
-    "imagePath": "/public/images/imf.jpeg",
+    "imagePath": "/images/imf.jpeg",
     "status": "past",
     "featured": true
   },
@@ -233,7 +233,7 @@
     "category": "Technical",
     "department": "All",
     "organizer": "Coding Club",
-    "imagePath": "/public/images/students.jpg",
+    "imagePath": "/images/students.jpg",
     "status": "past",
     "featured": true
   },
@@ -247,7 +247,7 @@
     "category": "Workshop",
     "department": "All",
     "organizer": "Tech Club",
-    "imagePath": "/public/images/hq720.jpg",
+    "imagePath": "/images/hq720.jpg",
     "status": "past",
     "featured": false
   },
@@ -261,7 +261,7 @@
     "category": "Social",
     "department": "All",
     "organizer": "NSS Wing",
-    "imagePath": "/public/images/tree.jpg",
+    "imagePath": "/images/tree.jpg",
     "status": "past",
     "featured": false
   },
@@ -275,7 +275,7 @@
     "category": "Academic",
     "department": "All",
     "organizer": "Science Club",
-    "imagePath": "/public/images/art.jpg",
+    "imagePath": "/images/art.jpg",
     "status": "past",
     "featured": false
   },
@@ -289,7 +289,7 @@
     "category": "Sports",
     "department": "All",
     "organizer": "Sports Committee",
-    "imagePath": "/public/images/marthon.jpg",
+    "imagePath": "/images/marthon.jpg",
     "status": "past",
     "featured": false
   },
@@ -303,7 +303,7 @@
     "category": "Cultural",
     "department": "All",
     "organizer": "Student Council",
-    "imagePath": "/public/images/basant.webp",
+    "imagePath": "/images/basant.jpeg",
     "status": "past",
     "featured": true
   },
@@ -317,7 +317,7 @@
     "category": "Academic",
     "department": "All",
     "organizer": "Administration",
-    "imagePath": "/public/images/A.jpg",
+    "imagePath": "/images/A.jpg",
     "status": "past",
     "featured": false
   }
