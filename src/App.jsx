@@ -8,7 +8,6 @@ import GalleryPage from './pages/GalleryPage';
 import FeedbackPage from './pages/FeedbackPage';
 import ContactPage from './pages/ContactPage';
 import EventRegistrationPage from './pages/EventRegistrationPage'; 
-import './styles/Calendar.css'; 
 import CalendarPage from './pages/CalendarPage'; 
 
 

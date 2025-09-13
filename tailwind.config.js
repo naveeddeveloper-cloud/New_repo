@@ -3,14 +3,18 @@ export default {
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
-    "./src/**/*.css",              // <-- ADD THIS LINE
-
+    "./src/**/*.css", // This line is CRITICAL for the build to work
+  ],
+  safelist: [
+    'bg-blue-500',
+    'bg-pink-500',
+    'bg-purple-500',
+    'bg-green-500',
+    'bg-yellow-500',
+    'bg-slate-500',
   ],
   theme: {
     extend: {},
   },
-  // This is the correct and stable place for the forms plugin
-  plugins: [
-    require('@tailwindcss/forms'),
-  ],
+  plugins: [],
 }
